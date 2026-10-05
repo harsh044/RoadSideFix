@@ -32,3 +32,4 @@ uvicorn
 watchfiles
 websockets
 GeoAlchemy2
+redis
