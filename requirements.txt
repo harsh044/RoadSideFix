@@ -35,3 +35,4 @@ GeoAlchemy2
 redis
 shapely
 python-jose[cryptography]
+razorpay
