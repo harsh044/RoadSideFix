@@ -36,3 +36,4 @@ redis
 shapely
 python-jose[cryptography]
 razorpay
+Jinja2
