@@ -87,6 +87,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://road-side-fix.vercel.app/"
         "http://localhost:3000",
         "http://localhost:5173",
     ],
