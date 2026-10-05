@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RoadSideFix Payment</title>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 100px auto;
+            text-align: center;
+        }
+
+        button {
+            padding: 14px 30px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>RoadSideFix</h1>
+
+    <p>Vehicle Repair Service</p>
+
+    <h2>₹500</h2>
+
+    <button onclick="startPayment()">
+        Pay ₹500
+    </button>
+
+    <p id="message"></p>
+
+<script>
+
+async function startPayment() {
+
+    document.getElementById("message").innerText =
+        "Creating payment order...";
+
+    // TEST ONLY:
+    // Replace this with an actual ServiceRequest UUID
+    const serviceRequestId = "{{ service_request_id }}";
+
+    const token = "{{ token }}";
+
+    try {
+
+        // Create Razorpay order through FastAPI
+        const response = await fetch(
+            "/api/v1/payments/create-order",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+
+                body: JSON.stringify({
+                    service_request_id: serviceRequestId
+                })
+            }
+        );
+
+        const order = await response.json();
+
+        if (!response.ok) {
+            document.getElementById("message").innerText =
+                order.detail || "Unable to create order";
+
+            return;
+        }
+
+        console.log("Order:", order);
+
+        // Razorpay Checkout configuration
+        const options = {
+
+            key: order.razorpay_key_id,
+
+            amount: order.amount * 100,
+
+            currency: order.currency,
+
+            name: "RoadSideFix",
+
+            description: "Vehicle Repair Service",
+
+            order_id: order.razorpay_order_id,
+
+            handler: async function(payment) {
+
+                console.log("Razorpay response:", payment);
+
+                document.getElementById("message").innerText =
+                    "Verifying payment...";
+
+                // Verify payment through FastAPI
+                const verifyResponse = await fetch(
+                    "/api/v1/payments/verify",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + token
+                        },
+
+                        body: JSON.stringify({
+
+                            razorpay_order_id:
+                                payment.razorpay_order_id,
+
+                            razorpay_payment_id:
+                                payment.razorpay_payment_id,
+
+                            razorpay_signature:
+                                payment.razorpay_signature
+                        })
+                    }
+                );
+
+                const result =
+                    await verifyResponse.json();
+
+                if (verifyResponse.ok) {
+
+                    document.getElementById("message").innerText =
+                        "Payment successful!";
+
+                    console.log("Payment:", result);
+
+                } else {
+
+                    document.getElementById("message").innerText =
+                        result.detail ||
+                        "Payment verification failed";
+                }
+            },
+
+            modal: {
+                ondismiss: function() {
+
+                    document.getElementById("message").innerText =
+                        "Payment cancelled";
+                }
+            },
+
+            theme: {
+                color: "#3399cc"
+            }
+        };
+
+        // Open Razorpay payment page
+        const razorpay =
+            new Razorpay(options);
+
+        razorpay.open();
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("message").innerText =
+            "Something went wrong";
+    }
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+.env
+/venv
+/RoadSideFix_FrontEnd
+__pycache__
