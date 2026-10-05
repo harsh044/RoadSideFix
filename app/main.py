@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.core.config import settings
-from app.core.redis import (
-    check_redis_connection,
-    close_redis_connection,
-)
+# from app.core.redis import (
+#     check_redis_connection,
+#     close_redis_connection,
+# )
 
 from app.core.database import Base, engine
 
@@ -54,34 +54,34 @@ from app.core.exceptions import (
 from app.routers.reviews import router as review_router
 from app.routers.admin import router as admin_router
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
 
-    # Create tables if they don't already exist
-    Base.metadata.create_all(bind=engine)
+#     # Create tables if they don't already exist
+#     Base.metadata.create_all(bind=engine)
 
-    """
-    Application startup and shutdown lifecycle.
-    """
+#     """
+#     Application startup and shutdown lifecycle.
+#     """
 
-    redis_available = await check_redis_connection()
+#     redis_available = await check_redis_connection()
 
-    if redis_available:
-        print("Redis connection successful")
-    else:
-        print("WARNING: Redis connection failed")
+#     if redis_available:
+#         print("Redis connection successful")
+#     else:
+#         print("WARNING: Redis connection failed")
 
-    yield
+#     yield
 
-    await close_redis_connection()
-    print("Redis connection closed")
+#     await close_redis_connection()
+#     print("Redis connection closed")
 
 
 app = FastAPI(
     title=settings.app_name,
     version="1.0.0",
     description="Mobile vehicle repair service API",
-    lifespan=lifespan,
+    # lifespan=lifespan,
 )
 
 app.add_middleware(
