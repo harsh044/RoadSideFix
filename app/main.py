@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.core.config import settings
-# from app.core.redis import (
-#     check_redis_connection,
-#     close_redis_connection,
-# )
+from app.core.redis import (
+    check_redis_connection,
+    close_redis_connection,
+)
 
 from app.core.database import Base, engine
 
@@ -57,8 +57,6 @@ from app.routers.admin import router as admin_router
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
 
-#     # Create tables if they don't already exist
-#     Base.metadata.create_all(bind=engine)
 
 #     """
 #     Application startup and shutdown lifecycle.
@@ -76,6 +74,9 @@ from app.routers.admin import router as admin_router
 #     await close_redis_connection()
 #     print("Redis connection closed")
 
+
+# Create tables if they don't already exist
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.app_name,
