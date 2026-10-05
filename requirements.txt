@@ -16,7 +16,7 @@ httptools
 idna
 Mako
 MarkupSafe
-psycopg2-binary
+psycopg[binary]
 pycparser
 pydantic
 pydantic-settings
